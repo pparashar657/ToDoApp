@@ -12,7 +12,7 @@
     <TextView
         android:id="@+id/todo"
         android:text="Todo"
-        android:textSize="40dp"
+        android:textSize="30dp"
         android:textColor="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
