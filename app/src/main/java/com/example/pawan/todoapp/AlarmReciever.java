@@ -11,11 +11,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class AlarmReciever extends BroadcastReceiver {
 
@@ -34,7 +38,12 @@ public class AlarmReciever extends BroadcastReceiver {
         builder.setSmallIcon(R.drawable.icon);
         builder.setVibrate(new long[]{1000, 1000});
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-        Intent i=new Intent(context,MainActivity.class);
+        Intent i=new Intent(context,DetailActivity.class);
+        i.putExtra("title",Title);
+        i.putExtra("details",Text);
+        SimpleDateFormat df = new SimpleDateFormat("MM dd yyyy HH:mm:ss");
+        String time=df.format(new Date(System.currentTimeMillis()));
+        i.putExtra("time",time);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,id,i,0);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();

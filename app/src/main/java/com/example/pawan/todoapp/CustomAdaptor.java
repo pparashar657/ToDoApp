@@ -40,10 +40,8 @@ public class CustomAdaptor extends ArrayAdapter<Todo> {
             convertView= LayoutInflater.from(mcontext).inflate(R.layout.row_layout,null);
             ViewHolder viewHolder=new ViewHolder();
             TextView todo=(TextView)convertView.findViewById(R.id.todo);
-            TextView limit=(TextView)convertView.findViewById(R.id.details);
             Button button=(Button)convertView.findViewById(R.id.delete);
             viewHolder.button=button;
-            viewHolder.limit=limit;
             viewHolder.todo= todo;
             convertView.setTag(viewHolder);
         }
@@ -55,13 +53,11 @@ public class CustomAdaptor extends ArrayAdapter<Todo> {
             }
         });
         holder.todo.setText(mitems.get(position).getTodo());
-        holder.limit.setText(mitems.get(position).getDetails());
         return convertView;
     }
 
     static class ViewHolder{
         TextView todo;
-        TextView limit;
         Button button;
     }
 

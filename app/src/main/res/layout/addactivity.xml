@@ -19,13 +19,13 @@
         android:id="@+id/todoname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="ToDo Title"
+        android:hint=" Title"
         />
     <EditText
         android:id="@+id/todolimit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="ToDo Deatils"
+        android:hint=" Deatils"
         />
     <Button
         android:layout_width="wrap_content"

@@ -25,8 +25,9 @@
         <receiver
             android:name=".AlarmReciever"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true" />
+
+        <activity android:name=".DetailActivity" />
     </application>
 
 </manifest>

@@ -19,15 +19,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
+    TextView Notodo;
     ListView listView;
     ArrayList<Todo> list;
     CustomAdaptor adapter;
@@ -37,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         setContentView(R.layout.activity_main);
         broadcastManager=LocalBroadcastManager.getInstance(this);
         listView=(ListView)findViewById(R.id.list);
+        Notodo=(TextView) findViewById(R.id.notodo);
+        Notodo.setVisibility(View.GONE);
         list=new ArrayList<>();
         TodoOpenHelper openHelper=TodoOpenHelper.getInstance(getApplicationContext());
         SQLiteDatabase db=openHelper.getReadableDatabase();
@@ -45,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             String tod=cursor.getString(cursor.getColumnIndex(Contracts.Todo_Name));
             String lim=cursor.getString(cursor.getColumnIndex(Contracts.Todo_Limit));
             Long id=cursor.getLong(cursor.getColumnIndex(Contracts.Todo_ID));
-//            Long time= Long.valueOf(0);
             Long time = cursor.getLong(cursor.getColumnIndex(Contracts.Todo_Time));
             Todo tem=new Todo(tod,lim,id,time);
             list.add(tem);
@@ -68,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                             db.close();
                             list.remove(position);
                             adapter.notifyDataSetChanged();
+                            if(list.size()==0){
+                                Notodo.setVisibility(View.VISIBLE);
+                            }
 
                         }
                     }
@@ -75,9 +83,30 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 builder.setNegativeButton("No",null);
                 AlertDialog dialog=builder.create();
                 dialog.show();
-                          }
+            }
         });
         listView.setAdapter(adapter);
+        if(list.size()==0){
+            Notodo.setVisibility(View.VISIBLE);
+        }
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Todo t=list.get(i);
+                Intent intent=new Intent(MainActivity.this,DetailActivity.class);
+                intent.putExtra("title",t.getTodo());
+                intent.putExtra("details",t.getDetails());
+                if(t.getTime()!=0) {
+                    SimpleDateFormat df = new SimpleDateFormat("MM dd yyyy HH:mm:ss");
+                    String time = df.format(new Date(t.getTime()));
+                    intent.putExtra("time", time);
+                }
+                else{
+                    intent.putExtra("time","");
+                }
+                startActivity(intent);
+            }
+        });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -155,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         db.close();
                         list.clear();
                         adapter.notifyDataSetChanged();
+                        if(list.size()==0){
+                            Notodo.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             });
@@ -165,28 +197,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         if(id==R.id.add){
             Intent intent =new Intent(MainActivity.this,Add_Activity.class);
             startActivityForResult(intent,1);
-        }
-        if(id==R.id.delete){
-            AlertDialog.Builder builder=new AlertDialog.Builder(this);
-            builder.setTitle("Delete ToDo");
-            builder.setMessage("Are you sure ?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    if(list.size()>0) {
-                        TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
-                        SQLiteDatabase db = openHelper.getWritableDatabase();
-                        Long id = list.get(list.size() - 1).getId();
-                        db.delete(Contracts.Todo_Table_Name, Contracts.Todo_ID + " = " + id, null);
-                        db.close();
-                        list.remove(list.size() - 1);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            });
-            builder.setNegativeButton("No",null);
-            AlertDialog dialog=builder.create();
-            dialog.show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -204,6 +214,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             Todo temp=(Todo) data.getSerializableExtra(Constants.TODO);
             list.add(temp);
             adapter.notifyDataSetChanged();
+            if(list.size()!=0){
+                Notodo.setVisibility(View.GONE);
+            }
         }
     }
 }
