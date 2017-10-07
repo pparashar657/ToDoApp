@@ -209,6 +209,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             temp.setDetails(t.getDetails());
             temp.setTodo(t.getTodo());
             adapter.notifyDataSetChanged();
+            if(list.size()!=0){
+                Notodo.setVisibility(View.GONE);
+            }
         }
         if(requestCode==1&&resultCode==2){
             Todo temp=(Todo) data.getSerializableExtra(Constants.TODO);

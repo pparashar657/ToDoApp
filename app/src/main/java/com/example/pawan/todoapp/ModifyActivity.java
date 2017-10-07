@@ -24,10 +24,11 @@ public class ModifyActivity extends AppCompatActivity implements Serializable {
     EditText todolimit;
     int position;
     int Id;
-    String t;
+    String t1;
     String newTodo;
     String newLimit;
     Long time;
+    Todo t;
     static boolean istime;
     @Override
 
@@ -42,6 +43,8 @@ public class ModifyActivity extends AppCompatActivity implements Serializable {
         todolimit=(EditText)findViewById(R.id.todolimit);
         todoname.setText(t.getTodo());
         todolimit.setText(t.getDetails());
+    }
+    public void Buttonclicked(View view) throws ParseException {
         Long id=t.getId();
         Id= (int) (id*1);
         TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
@@ -54,23 +57,22 @@ public class ModifyActivity extends AppCompatActivity implements Serializable {
         intent1.putExtra(Constants.POSITION_KEY,Id);
         PendingIntent pendingIntent= PendingIntent.getBroadcast(this,Id,intent1,0);
         alarmManager.cancel(pendingIntent);
-    }
-    public void Buttonclicked(View view) throws ParseException {
+        db.close();
         newTodo=todoname.getEditableText().toString();
         newLimit=todolimit.getEditableText().toString();
-        TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
-        SQLiteDatabase db=openHelper.getWritableDatabase();
+        openHelper = TodoOpenHelper.getInstance(getApplicationContext());
+        db=openHelper.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
         contentValues.put(Contracts.Todo_Name,newTodo);
         contentValues.put(Contracts.Todo_Time,time);
         contentValues.put(Contracts.Todo_Limit,newLimit);
-        Long id=db.insert(Contracts.Todo_Table_Name,null,contentValues);
+        id=db.insert(Contracts.Todo_Table_Name,null,contentValues);
         Id= (int) (id*1);
         if(istime){
-            t=DatePickerFragment.get()+" ";
-            t+=TimePickerFragment.get();
+            t1=DatePickerFragment.get()+" ";
+            t1+=TimePickerFragment.get();
             SimpleDateFormat df = new SimpleDateFormat("MM dd yyyy HH:mm:ss");
-            Date date = df.parse(t);
+            Date date = df.parse(t1);
             time = date.getTime();
             sendBroadcast(new Intent());
         }
