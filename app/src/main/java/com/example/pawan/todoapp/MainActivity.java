@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 intent.putExtra(Constants.TODO,to);
                 intent.putExtra(Constants.POSITION_KEY,i);
                 startActivityForResult(intent,1);
-                list.remove(i);
                 return true;
             }
         });
@@ -212,6 +211,19 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             if(list.size()!=0){
                 Notodo.setVisibility(View.GONE);
             }
+            int id=data.getIntExtra(Constants.Id,0);
+            TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
+            SQLiteDatabase db=openHelper.getWritableDatabase();
+            db.delete(Contracts.Todo_Table_Name,Contracts.Todo_ID+" = "+id,null);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Intent intent1=new Intent(this,AlarmReciever.class);
+            intent1.putExtra(Constants.TODO,t.getTodo());
+            intent1.putExtra(Constants.LIMIT,t.getDetails());
+            intent1.putExtra(Constants.POSITION_KEY,id);
+            PendingIntent pendingIntent= PendingIntent.getBroadcast(this,id,intent1,0);
+            alarmManager.cancel(pendingIntent);
+            db.close();
+            adapter.notifyDataSetChanged();
         }
         if(requestCode==1&&resultCode==2){
             Todo temp=(Todo) data.getSerializableExtra(Constants.TODO);

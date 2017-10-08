@@ -45,52 +45,46 @@ public class ModifyActivity extends AppCompatActivity implements Serializable {
         todolimit.setText(t.getDetails());
     }
     public void Buttonclicked(View view) throws ParseException {
-        Long id=t.getId();
-        Id= (int) (id*1);
         TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
         SQLiteDatabase db=openHelper.getWritableDatabase();
-        db.delete(Contracts.Todo_Table_Name,Contracts.Todo_ID+" = "+id,null);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent1=new Intent(this,AlarmReciever.class);
-        intent1.putExtra(Constants.TODO,t.getTodo());
-        intent1.putExtra(Constants.LIMIT,t.getDetails());
-        intent1.putExtra(Constants.POSITION_KEY,Id);
-        PendingIntent pendingIntent= PendingIntent.getBroadcast(this,Id,intent1,0);
-        alarmManager.cancel(pendingIntent);
-        db.close();
         newTodo=todoname.getEditableText().toString();
         newLimit=todolimit.getEditableText().toString();
-        openHelper = TodoOpenHelper.getInstance(getApplicationContext());
-        db=openHelper.getWritableDatabase();
-        ContentValues contentValues=new ContentValues();
-        contentValues.put(Contracts.Todo_Name,newTodo);
-        contentValues.put(Contracts.Todo_Time,time);
-        contentValues.put(Contracts.Todo_Limit,newLimit);
-        id=db.insert(Contracts.Todo_Table_Name,null,contentValues);
-        Id= (int) (id*1);
         if(istime){
             t1=DatePickerFragment.get()+" ";
             t1+=TimePickerFragment.get();
             SimpleDateFormat df = new SimpleDateFormat("MM dd yyyy HH:mm:ss");
-            Date date = df.parse(t1);
+            Date date = null;
+            try {
+                date = df.parse(t1);
+            } catch (ParseException e) {
+                Toast.makeText(this,"Error in parsing time", Toast.LENGTH_SHORT).show();;
+            }
             time = date.getTime();
             sendBroadcast(new Intent());
         }
         else{
             time= Long.valueOf(0);
         }
+        ContentValues contentValues=new ContentValues();
+        contentValues.put(Contracts.Todo_Name,newTodo);
+        contentValues.put(Contracts.Todo_Time,time);
+        contentValues.put(Contracts.Todo_Limit,newLimit);
+        Long id=db.insert(Contracts.Todo_Table_Name,null,contentValues);
+        Id= (int) (id*1);
         if(id==-1){
             Toast.makeText(this, "Error in adding values", Toast.LENGTH_SHORT).show();
         }
         else{
             Intent i=new Intent();
-            Todo t=new Todo(newTodo,newLimit,id,time);
-            i.putExtra(Constants.TODO,t);
-            setResult(2,i);
+            Todo t1=new Todo(newTodo,newLimit,id,time);
+            i.putExtra(Constants.TODO,t1);
+            i.putExtra(Constants.POSITION_KEY,position);
+            setResult(1,i);
         }
         db.close();
         finish();
     }
+
 
     @Override
     public void sendBroadcast(Intent intent) {
