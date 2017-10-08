@@ -203,15 +203,19 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==1&&resultCode==1){
+
             Todo temp=list.get(data.getIntExtra(Constants.POSITION_KEY,0));
             Todo t=(Todo) data.getSerializableExtra(Constants.TODO);
+            Long Id=temp.getId();
+            int id=(int)(Id*1);
             temp.setDetails(t.getDetails());
             temp.setTodo(t.getTodo());
+            temp.setId(t.getId());
             adapter.notifyDataSetChanged();
             if(list.size()!=0){
                 Notodo.setVisibility(View.GONE);
             }
-            int id=data.getIntExtra(Constants.Id,0);
+
             TodoOpenHelper openHelper = TodoOpenHelper.getInstance(getApplicationContext());
             SQLiteDatabase db=openHelper.getWritableDatabase();
             db.delete(Contracts.Todo_Table_Name,Contracts.Todo_ID+" = "+id,null);
